@@ -10,5 +10,7 @@ namespace AzureStorageConsole.AzureQueueStorage
         public string ConnectionString { get; set; }
         public string QueueName { get; set; }
         public int ExpireMessageInDays { get; set; }
+        public int PeekMaxMessages { get; set; } = 1;
+
     }
 }

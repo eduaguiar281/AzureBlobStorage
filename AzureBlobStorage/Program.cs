@@ -2,10 +2,14 @@
 using AzureStorageConsole.AzureQueueStorage;
 using AzureStorageConsole.Services.Queues;
 using AzureStorageConsole.Services.Storages;
+using AzureStorageConsole.Services.Table.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AzureStorageConsole
@@ -26,6 +30,8 @@ namespace AzureStorageConsole
             Console.WriteLine();
 
             await EnviarMensagem();
+
+            await ReceberMensagem();
         }
 
         static async Task EnviarMensagem()
@@ -33,15 +39,52 @@ namespace AzureStorageConsole
             bool continuar;
             do
             {
-                Console.WriteLine("Digite sua mensagem:");
-                var mensagem = Console.ReadLine();
+                Console.WriteLine("Digite Primeiro Nome:");
+                string nome = Console.ReadLine();
+                Console.WriteLine("Digite Seguindo Nome:");
+                string segundoNome = Console.ReadLine();
+                Console.WriteLine("Digite Telefone:");
+                string telefone = Console.ReadLine();
+                Console.WriteLine("Digite Data Nascimento:");
+                DateTime dataNascimento = DateTime.Parse(Console.ReadLine());
+
+                Customer customer = new Customer
+                {
+                    FirstName = nome,
+                    LastName = segundoNome,
+                    PhoneNumber = telefone,
+                    DateOfBorn = dataNascimento
+                };
+
                 var queueSender = ServiceProvider.GetService<IQueueSenderService>();
-                await queueSender.SendMessage(new { Client = "ConsoleApp01", Mensagem = mensagem });
+                await queueSender.SendMessage(customer);
                 Console.WriteLine("Deseja continuar? Digite S-(Sim) ou N-(Não)");
                 continuar = Console.ReadLine() != "N";
+                Console.Clear();
             }
             while (continuar);
 
+        }
+
+        static async Task ReceberMensagem()
+        {
+            bool continuar;
+            do
+            {
+                var queueReceiver = ServiceProvider.GetService<IQueueReceiverService>();
+                var received = await queueReceiver.Receive<Customer>(CancellationToken.None);
+                if (received == default(IEnumerable<Customer>))
+                    Console.WriteLine("Não foi recebido nenhum item da Fila tente novamente");
+                else
+                {
+                    foreach (var value in received)
+                        Console.WriteLine($"item recebido da fila {value.FirstName}- {value.LastName}, {value.PhoneNumber}. Data Nascimento: {value.DateOfBorn:dd/MM/yyyy}");
+                }
+
+                Console.WriteLine("Deseja tentar receber nova mensagem? Digite S-(Sim) ou N-(Não)");
+                continuar = Console.ReadLine() != "N";
+            }
+            while (continuar);
         }
 
 
@@ -82,7 +125,8 @@ namespace AzureStorageConsole
             services.AddScoped<IBlobStorageService, BlobStorageService>()
                 .AddScoped<IQueueSenderService, AzureQueueSenderService>()
                 .AddSingleton<IStorageSettings, AzureStorageSettings>(x=> settings)
-                .AddSingleton<IQueueSettings, AzureQueueSettings>(x => queueSettings);
+                .AddSingleton<IQueueSettings, AzureQueueSettings>(x => queueSettings)
+                .AddScoped<IQueueReceiverService, AzureQueueReceiverService>() ;
 
         }
     }
