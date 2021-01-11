@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using AzureStorageConsole.AzureTableStorage;
+using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections;
 using System.Collections.Generic;

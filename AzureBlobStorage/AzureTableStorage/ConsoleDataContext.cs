@@ -1,7 +1,7 @@
-﻿using AzureStorageConsole.Blobs.Services.Table.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using AzureStorageConsole.Services.Table.Models;
 
 namespace AzureStorageConsole.AzureTableStorage
 {

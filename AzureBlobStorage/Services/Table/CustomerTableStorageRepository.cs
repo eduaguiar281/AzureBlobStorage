@@ -1,4 +1,5 @@
 ﻿using AzureStorageConsole.AzureTableStorage;
+using AzureStorageConsole.Services.Table;
 using AzureStorageConsole.Services.Table.Models;
 using Microsoft.Azure.Cosmos.Table;
 using System;
@@ -149,6 +150,26 @@ namespace AzureStorageConsole.Blobs.Services.Table
                 Console.WriteLine("Informações de conta de armazenamento fornecidas não é valida. Confirme se AccountName e AccountKey são válidos no arquivo appsettings.json - em seguida, reinicie o exemplo.");
                 throw;
             }
+        }
+
+        public Task<Customer> InsertOrUpdate(Customer data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Customer> Find(object id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Customer>> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Customer>> Get(TableStorageConditionCollection condition)
+        {
+            throw new NotImplementedException();
         }
     }
 }
